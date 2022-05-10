@@ -12,13 +12,13 @@ module "vpc" {
 
   enable_nat_gateway      = true
   single_nat_gateway      = true
-  enable_dns_hostnames = true
+  enable_dns_hostnames    = true
   
   tags = var.tags
 }
 
 
-# Create VPC Peering
+# Create VPC Peering to HCP HVN
 
 resource "hcp_aws_network_peering" "peer" {
   hvn_id          = var.hcp_hvn_id

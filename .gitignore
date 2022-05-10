@@ -27,3 +27,11 @@ override.tf.json
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
+NOTES.md
+.gitignore
+.terraform.lock.hcl
+kubeconfig_hcp-consul-pg8krs-eks-dev
+kubeconfig_hcp-consul-pg8krs-eks-prod
+t/n8-enablement-dev-sandbox/config.yml
+t/n8-enablement-dev-sandbox/track.yml
+t/n8-enablement-dev-sandbox/01-challenge-1/assignment.md

@@ -28,70 +28,149 @@ resource "hcp_consul_cluster_root_token" "token" {
 }
 
 
-# HCP VPCs
-module "hcp_vpc" {
-  for_each = { for env in var.env : env.name => env }
+# VPC Deployments
+
+## HCP EKS Prod VPC
+module "hcp_vpc_eks_prod" {
   source = "./modules/hcp_vpc"
 
   region              = var.region
-  name                = each.value.name
-  cidr                = each.value.cidr
+  name                = var.env-eks-prod.name
+  cidr                = var.env-eks-prod.cidr
   suffix              = random_string.rand_suffix.result
   availability_zones  = var.availability_zones
-  private_subnets     = each.value.private_subnets
-  public_subnets      = each.value.public_subnets
+  private_subnets     = var.env-eks-prod.private_subnets
+  public_subnets      = var.env-eks-prod.public_subnets
   hcp_hvn_id          = hcp_hvn.hvn.hvn_id
   hvn_cidr_block      = hcp_hvn.hvn.cidr_block
   hcp_hvn_self_link   = hcp_hvn.hvn.self_link
 
   tags = {
     Terraform   = "true"
-    Environment = each.value.name
+    Environment = var.env-eks-prod.name
   }
 
 }
 
 
 
-# EKS Module
+## HCP EKS Dev VPC
+module "hcp_vpc_eks_dev" {
+  source = "./modules/hcp_vpc"
 
-module "hcp_eks" {
-  for_each = { 
-    for env in var.env : 
-      env.name => env
-      if env.platform == "eks"
+  region              = var.region
+  name                = var.env-eks-dev.name
+  cidr                = var.env-eks-dev.cidr
+  suffix              = random_string.rand_suffix.result
+  availability_zones  = var.availability_zones
+  private_subnets     = var.env-eks-dev.private_subnets
+  public_subnets      = var.env-eks-dev.public_subnets
+  hcp_hvn_id          = hcp_hvn.hvn.hvn_id
+  hvn_cidr_block      = hcp_hvn.hvn.cidr_block
+  hcp_hvn_self_link   = hcp_hvn.hvn.self_link
+
+  tags = {
+    Terraform   = "true"
+    Environment = var.env-eks-dev.name
   }
 
-  source = "./modules/hcp_eks"
+}
 
-  cluster_name = "${hcp_consul_cluster.hcp_consul.cluster_id}-${each.value.name}"
-  public_subnets      = module.hcp_vpc[each.value.name].public_subnets
-  vpc_id = module.hcp_vpc[each.value.name].vpc_id
-  datacenter = hcp_consul_cluster.hcp_consul.datacenter
+
+
+## HCP ECS Dev VPC
+module "hcp_vpc_ecs_dev" {
+  source = "./modules/hcp_vpc"
+
+  region              = var.region
+  name                = var.env-ecs-dev.name
+  cidr                = var.env-ecs-dev.cidr
+  suffix              = random_string.rand_suffix.result
+  availability_zones  = var.availability_zones
+  private_subnets     = var.env-ecs-dev.private_subnets
+  public_subnets      = var.env-ecs-dev.public_subnets
+  hcp_hvn_id          = hcp_hvn.hvn.hvn_id
+  hvn_cidr_block      = hcp_hvn.hvn.cidr_block
+  hcp_hvn_self_link   = hcp_hvn.hvn.self_link
+
+  tags = {
+    Terraform   = "true"
+    Environment = var.env-ecs-dev.name
+  }
+
+}
+
+
+# EKS Module Deployments
+
+## EKS Prod
+module "hcp_eks_prod" {
+
+  source = "./modules/hcp_eks_prod"
+
+  env_name = var.env-eks-prod.name
+  cluster_name = "${hcp_consul_cluster.hcp_consul.cluster_id}-${var.env-eks-prod.name}"
+  public_subnets      = module.hcp_vpc_eks_prod.public_subnets
+  vpc_id = module.hcp_vpc_eks_prod.vpc_id
+  datacenter = hcp_consul_cluster.hcp_consul.datacenter //TODO: consul_datacenter
   consul_ca_file = hcp_consul_cluster.hcp_consul.consul_ca_file
   consul_config_file = hcp_consul_cluster.hcp_consul.consul_config_file
   hcp_cluster_id = hcp_consul_cluster.hcp_consul.cluster_id
-  hcp_acl_token_secret_id = hcp_consul_cluster_root_token.token.secret_id
+  boostrap_acl_token = hcp_consul_cluster_root_token.token.secret_id
   hvn_cidr = hcp_hvn.hvn.cidr_block
   consul_version = hcp_consul_cluster.hcp_consul.consul_version
 
 }
 
 
-# ECS Module
+## EKS Dev
+module "hcp_eks_dev" {
 
-//TODO: use the EKS module pattern to add ECS to the lab.
-//TODO: ./modules/hcp_ecs/data.tf > locals. Make them all variables
-#module "hcp_eks" {
-#  for_each = { 
-#    for env in var.env : 
-#      env.name => env
-#      if env.platform == "ecs"
-#  }
-#  name                = each.value.name
-#  region              = var.region
+  source = "./modules/hcp_eks_dev"
 
-#
-#  source = "./modules/hcp_ecs"
-#
-#}
+  env_name = var.env-eks-dev.name
+  cluster_name = "${hcp_consul_cluster.hcp_consul.cluster_id}-${var.env-eks-dev.name}"
+  public_subnets      = module.hcp_vpc_eks_dev.public_subnets
+  vpc_id = module.hcp_vpc_eks_dev.vpc_id
+  datacenter = hcp_consul_cluster.hcp_consul.datacenter //TODO: consul_datacenter
+  consul_ca_file = hcp_consul_cluster.hcp_consul.consul_ca_file
+  consul_config_file = hcp_consul_cluster.hcp_consul.consul_config_file
+  hcp_cluster_id = hcp_consul_cluster.hcp_consul.cluster_id
+  boostrap_acl_token = hcp_consul_cluster_root_token.token.secret_id
+  hvn_cidr = hcp_hvn.hvn.cidr_block
+  consul_version = hcp_consul_cluster.hcp_consul.consul_version
+
+}
+
+
+
+# ECS Module Deployments
+
+## ECS Dev
+module "hcp_ecs_dev" {
+  source = "./modules/hcp_ecs_dev"
+
+  # VPC Settings
+  ecs_dev_vpc_id = module.hcp_vpc_ecs_dev.vpc_id
+  ecs_dev_vpc_cidr_block = module.hcp_vpc_ecs_dev.vpc_cidr_block
+  ecs_dev_private_subnets = module.hcp_vpc_ecs_dev.private_subnets
+  ecs_dev_public_subnets = module.hcp_vpc_ecs_dev.public_subnets
+  ecs_dev_route_table_ids = concat(module.hcp_vpc_ecs_dev.public_route_table_ids, module.hcp_vpc_ecs_dev.private_route_table_ids)
+
+  # Variables for peering ECS to EKS Dev, for Mesh Gateway comm's
+  eks_dev_aws_vpc_id = module.hcp_vpc_eks_dev.vpc_id
+  eks_dev_vpc_owner_id = module.hcp_vpc_eks_dev.vpc_owner_id
+  eks_dev_vpc_cidr_block = module.hcp_vpc_eks_dev.vpc_cidr_block
+  eks_dev_route_table_ids = concat(module.hcp_vpc_eks_dev.public_route_table_ids, module.hcp_vpc_eks_dev.private_route_table_ids)
+  eks_dev_cluster_primary_security_group_id = module.hcp_eks_dev.cluster_primary_security_group_id
+
+  # HCP Consul data for bootstrapping ECS Cluster
+  boostrap_acl_token = hcp_consul_cluster_root_token.token.secret_id
+  cluster_name = "${hcp_consul_cluster.hcp_consul.cluster_id}-${var.env-eks-dev.name}"
+  consul_config_file = hcp_consul_cluster.hcp_consul.consul_config_file
+  consul_ca_file = hcp_consul_cluster.hcp_consul.consul_ca_file
+  consul_version = hcp_consul_cluster.hcp_consul.consul_version
+  hcp_consul_private_endpoint_url = hcp_consul_cluster.hcp_consul.consul_private_endpoint_url
+  hcp_consul_public_endpoint_url = hcp_consul_cluster.hcp_consul.consul_public_endpoint_url
+  consul_datacenter = hcp_consul_cluster.hcp_consul.datacenter
+}
