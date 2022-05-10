@@ -1,7 +1,7 @@
 global:
   enabled: false
   name: consul-${env_name}
-  datacenter: ${datacenter}
+  datacenter: ${consul_datacenter}
   image: "hashicorp/consul-enterprise:${consul_version}-ent"
   enableConsulNamespaces: true
   adminPartitions:

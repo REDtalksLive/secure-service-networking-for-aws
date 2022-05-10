@@ -2,7 +2,7 @@ locals {
   public_api_name = "public-api"
   public_api_port = 8081
   public_api_namespace = "default"
-  public_api_partition = "ecs-dev"
+  public_api_partition = var.env_name
 }
 
 resource "aws_ecs_service" "public-api" {

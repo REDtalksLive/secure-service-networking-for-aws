@@ -48,7 +48,7 @@ variable "hcp_consul_cluster_addr" {
   default = ""
 }
 
-variable "datacenter" {
+variable "consul_datacenter" {
   description = "HCP Consul Datacenter"
   type = string
   default = ""

@@ -83,6 +83,12 @@ variable "cluster_name" {
   default = ""
 }
 
+variable "env_name" {
+  description = "Name of the Environment"
+  type = string
+  default = ""
+}
+
 variable "consul_version" {
   description = ""
   type = string

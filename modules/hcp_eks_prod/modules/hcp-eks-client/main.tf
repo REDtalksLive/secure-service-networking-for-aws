@@ -17,15 +17,14 @@ resource "helm_release" "consul" {
   repository = "https://helm.releases.hashicorp.com"
   version    = var.chart_version
   chart      = "consul"
-//TODO: Pass name and partition in here.
   values = [
     templatefile("${path.module}/templates/consul.tpl", {
-      env_name         = var.env_name
-      datacenter       = var.datacenter
-      consul_hosts     = jsonencode(var.consul_hosts)
-      cluster_id       = var.cluster_id
-      k8s_api_endpoint = var.k8s_api_endpoint
-      consul_version   = substr(var.consul_version, 1, -1)
+      env_name           = var.env_name
+      consul_datacenter  = var.consul_datacenter
+      consul_hosts       = jsonencode(var.consul_hosts)
+      cluster_id         = var.cluster_id
+      k8s_api_endpoint   = var.k8s_api_endpoint
+      consul_version     = substr(var.consul_version, 1, -1)
     })
   ]
 

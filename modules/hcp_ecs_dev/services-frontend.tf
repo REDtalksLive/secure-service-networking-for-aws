@@ -2,7 +2,7 @@ locals {
   frontend_name = "frontend"
   frontend_port = 3000
   frontent_namespace = "default"
-  frontend_partition = "ecs-dev"
+  frontend_partition = var.env_name
 }
 
 resource "aws_ecs_service" "frontend" {

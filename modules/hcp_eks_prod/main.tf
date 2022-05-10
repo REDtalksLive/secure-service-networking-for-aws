@@ -40,7 +40,7 @@ module "eks_consul_client" {
 
   boostrap_acl_token    = var.boostrap_acl_token
   consul_ca_file        = base64decode(var.consul_ca_file)
-  datacenter            = var.datacenter
+  consul_datacenter     = var.consul_datacenter
   gossip_encryption_key = jsondecode(base64decode(var.consul_config_file))["encrypt"]
 
   # The EKS node group will fail to create if the clients are

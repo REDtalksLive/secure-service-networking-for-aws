@@ -19,6 +19,6 @@ output "ecs_dev_hashicups_url" {
 }
 
 output "ecs_dev_tls_private_key" {
-  value = module.hcp_ecs_dev.tls_private_key
+  value     = module.hcp_ecs_dev.tls_private_key
   sensitive = true
 }

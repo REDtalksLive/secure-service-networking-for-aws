@@ -30,8 +30,5 @@ override.tf.json
 NOTES.md
 .gitignore
 .terraform.lock.hcl
-kubeconfig_hcp-consul-pg8krs-eks-dev
-kubeconfig_hcp-consul-pg8krs-eks-prod
-t/n8-enablement-dev-sandbox/config.yml
-t/n8-enablement-dev-sandbox/track.yml
-t/n8-enablement-dev-sandbox/01-challenge-1/assignment.md
+kubeconfig_hcp-consul-*
+t/*

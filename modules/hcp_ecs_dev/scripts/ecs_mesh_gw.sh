@@ -17,7 +17,7 @@ echo "deb [arch=amd64 signed-by=/usr/share/keyrings/getenvoy-keyring.gpg] https:
 
 #install packages
 sudo apt update -y
-sudo apt install awscli consul-enterprise=1.11.4+ent jq unzip getenvoy-envoy -y
+sudo apt install awscli consul-enterprise=1.11.5*+ent jq unzip getenvoy-envoy -y
 
 #metadata
 local_ipv4="$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)"

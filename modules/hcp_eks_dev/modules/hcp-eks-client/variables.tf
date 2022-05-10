@@ -25,7 +25,7 @@ variable "consul_ca_file" {
   description = "The Consul CA certificate bundle used to validate TLS connections"
 }
 
-variable "datacenter" {
+variable "consul_datacenter" {
   type        = string
   description = "The name of the Consul datacenter that client agents should register as"
 }
