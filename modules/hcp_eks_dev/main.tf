@@ -1,23 +1,13 @@
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-#  version = "18.20.5"
   version = "17.24.0"
 
   cluster_name             = var.cluster_name
   cluster_version          = "1.21"
-#  subnet_ids               = concat(var.public_subnets, var.private_subnets)
-#  subnets               = concat(var.public_subnets, var.private_subnets)
   subnets               = var.public_subnets
   vpc_id                   = var.vpc_id
   wait_for_cluster_timeout = 900
-#  cluster_timeouts         = {
-#    create = "15m"
-#  }
 
-#  cluster_endpoint_private_access = true
- # cluster_endpoint_public_access  = true  # DEFAULT TRUE
-
-#  eks_managed_node_groups = {
   node_groups = {
     application = {
       name_prefix      = "hashicups"

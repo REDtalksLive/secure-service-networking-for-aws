@@ -31,8 +31,7 @@ data "template_file" "aws_mgw_init" {
     agent_config = base64decode(var.consul_config_file)
     token = var.boostrap_acl_token
     ca = base64decode(var.consul_ca_file)
-    partition = "ecs-dev" //TODO: var.env
-    //env_name         = var.env_name
+    partition = var.env_name
     consul_version = substr(var.consul_version, 1, -1)
   }
 }
